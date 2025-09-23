@@ -198,8 +198,9 @@ export default function CodeRunner() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4">
       <div className="max-w-7xl mx-auto ">
         {/* NavBar */}
-        <div className="flex justify-center gap-2 top-0 left-0 w-full z-50 fixed  mb-6 mt-2">
-          <div className="flex space-x-2 bg-white/30 dark:bg-slate-700/30 backdrop-blur-md rounded-full px-4 py-2 shadow-lg border border-white/20 dark:border-slate-600/20">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-2 top-0 left-0 w-full z-50 fixed px-2 mb-6 mt-2">
+          {/* Tabs */}
+          <div className="flex flex-wrap justify-center md:justify-start space-x-2 bg-white/30 dark:bg-slate-700/30 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-white/20 dark:border-slate-600/20">
             {Object.keys(modules).map((key) => (
               <button
                 key={key}
@@ -207,18 +208,19 @@ export default function CodeRunner() {
                   setActiveTab(key);
                   setOutput("");
                 }}
-                className={`flex items-center gap-2 px-5 py-2 cursor-pointer rounded-full transition-all ${activeTab === key
+                className={`flex items-center gap-2 px-4 py-2 cursor-pointer rounded-full transition-all ${activeTab === key
                   ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
                   : "text-slate-700 dark:text-slate-200 hover:text-blue-500"
                   }`}
               >
-
                 {modules[key].icon}
                 <span className="text-sm font-medium">{modules[key].name}</span>
               </button>
             ))}
           </div>
-          <div className="h-12 w-12 p-2  rounded-full shadow-lg flex items-center justify-center ">
+
+          {/* Dark Mode Toggle (hidden on mobile) */}
+          <div className="hidden md:flex h-12 w-12 p-2 rounded-full shadow-lg items-center justify-center">
             <Button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="h-12 w-12 rounded-full cursor-pointer bg-white text-black hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 p-0 transition"
@@ -232,22 +234,27 @@ export default function CodeRunner() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 mt-10 gap-6">
+
+        <div className="grid grid-cols-1 xl:grid-cols-3 mt-15 gap-6">
           {/* Code Editor Section */}
-          <div className="xl:col-span-2 space-y-6">
+          <div className="xl:col-span-2 space-y-6 ">
             {/* Controls */}
             <Card className="shadow-lg border-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm">
               <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+
+                  {/* Left Section */}
                   <div className="flex items-center gap-3">
                     <div className={`w-3 h-3 rounded-full ${currentConfig?.color}`}></div>
                     <CardTitle className="text-lg">
                       {currentConfig.icon} {currentConfig.name}
                     </CardTitle>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Select value={language}  onValueChange={handleLanguageChange}>
-                      <SelectTrigger className="w-40 border-slate-300 focus:border-blue-500 cursor-pointer">
+
+                  {/* Right Section */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Select value={language} onValueChange={handleLanguageChange}>
+                      <SelectTrigger className="w-36 sm:w-40 border-slate-300 focus:border-blue-500 cursor-pointer">
                         <SelectValue placeholder="Language" />
                       </SelectTrigger>
                       <SelectContent>
@@ -258,9 +265,9 @@ export default function CodeRunner() {
                     </Select>
 
                     {/* Settings Dropdown */}
-                    <DropdownMenu >
+                    <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className={"cursor-pointer"} size="sm">
+                        <Button variant="outline" className="cursor-pointer" size="sm">
                           <Settings className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -280,10 +287,15 @@ export default function CodeRunner() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
+
+                    {/* Execute Button */}
                     <Button
                       onClick={runCode}
                       disabled={loading}
-                      className={`${loading ? 'bg-slate-400' : ' cursor-pointer bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'} text-white shadow-lg transition-all duration-200`}
+                      className={`${loading
+                        ? "bg-slate-400"
+                        : "cursor-pointer bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                        } text-white shadow-lg transition-all duration-200`}
                     >
                       {loading ? (
                         <>
@@ -301,6 +313,7 @@ export default function CodeRunner() {
                 </div>
               </CardHeader>
             </Card>
+
 
             {/* Code Editor */}
             <Card className={`shadow-xl border-0 bg-white dark:bg-slate-800 ${currentConfig.accent} border-l-4`}>
@@ -450,8 +463,8 @@ export default function CodeRunner() {
 
         {/* Code Generation Section */}
         {activeTab === "generate" && (
-          <div className="fixed bottom-6 left-1/2  transform -translate-x-1/2 w-[90%] max-w-4xl z-50">
-            <Card className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl shadow-2xl border-0 rounded-2xl overflow-hidden">
+          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-4xl z-50">
+            <Card className="bg-white/30 dark:bg-slate-700/30 backdrop-blur-md shadow-lg border-0 rounded-2xl overflow-hidden transition-all duration-300">
               <CardContent className="p-4">
                 <div className="space-y-4">
                   {/* Enhanced Title */}
@@ -463,7 +476,7 @@ export default function CodeRunner() {
                       <Label className="text-lg font-semibold text-slate-800 dark:text-slate-100">
                         AI Code Generator
                       </Label>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                      <p className="text-sm text-slate-800 dark:text-slate-400">
                         Describe what you want to code and AI will generate it for you
                       </p>
                     </div>
@@ -475,7 +488,7 @@ export default function CodeRunner() {
                       <Input
                         onChange={(e) => setInput(e.target.value)}
                         value={input}
-                        placeholder="Example: Write a Python function to find the longest common subsequence between two strings using dynamic programming"
+                        placeholder="Example: Write a Python function to find the longest common subsequence..."
                         className="h-10 resize-none border-slate-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 rounded-full"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
@@ -500,7 +513,7 @@ export default function CodeRunner() {
                       size="lg"
                       className={`${generate || !input.trim()
                         ? 'bg-slate-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r  mb-5 from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transform hover:scale-105'
+                        : 'bg-gradient-to-r mb-5 from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transform hover:scale-105'
                         } text-white font-medium mb-5 shadow-lg transition-all duration-200 rounded-xl px-8 py-3`}
                     >
                       {generate ? (
@@ -517,8 +530,8 @@ export default function CodeRunner() {
                     </Button>
                   </div>
 
-                  {/* Quick Examples */}
-                  <div className="flex flex-wrap gap-2 mt-4">
+                  {/* Quick Examples (Hidden on Mobile) */}
+                  <div className="hidden md:flex flex-wrap gap-2 mt-4">
                     <span className="text-sm text-slate-600 dark:text-slate-400">Quick examples:</span>
                     {[
                       "Binary search algorithm",
@@ -542,6 +555,7 @@ export default function CodeRunner() {
             </Card>
           </div>
         )}
+
 
         {/* Enhanced Module-specific Content */}
         {activeTab === "modify" && (
