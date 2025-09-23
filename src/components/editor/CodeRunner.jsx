@@ -47,21 +47,18 @@ const LANGUAGE_CONFIGS = {
   python: {
     color: "bg-blue-500",
     accent: "border-blue-400",
-    icon: "🐍",
     name: "Python 3",
     ext: "py"
   },
   java: {
     color: "bg-orange-500",
     accent: "border-orange-400",
-    icon: "☕",
     name: "Java",
     ext: "java"
   },
   cpp: {
     color: "bg-purple-500",
     accent: "border-purple-400",
-    icon: "⚡",
     name: "C++",
     ext: "cpp"
   }
@@ -213,7 +210,7 @@ export default function CodeRunner() {
                   : "text-slate-700 dark:text-slate-200 hover:text-blue-500"
                   }`}
               >
-                {modules[key].icon}
+                {modules[key]?.icon}
                 <span className="text-sm font-medium">{modules[key].name}</span>
               </button>
             ))}
@@ -247,7 +244,7 @@ export default function CodeRunner() {
                   <div className="flex items-center gap-3">
                     <div className={`w-3 h-3 rounded-full ${currentConfig?.color}`}></div>
                     <CardTitle className="text-lg">
-                      {currentConfig.icon} {currentConfig.name}
+                      {currentConfig.name}
                     </CardTitle>
                   </div>
 
@@ -258,9 +255,9 @@ export default function CodeRunner() {
                         <SelectValue placeholder="Language" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="python">🐍 Python</SelectItem>
-                        <SelectItem value="java">☕ Java</SelectItem>
-                        <SelectItem value="cpp">⚡ C++</SelectItem>
+                        <SelectItem value="python">Python</SelectItem>
+                        <SelectItem value="java">Java</SelectItem>
+                        <SelectItem value="cpp">C++</SelectItem>
                       </SelectContent>
                     </Select>
 
