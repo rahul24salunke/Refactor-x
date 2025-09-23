@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm"
 import {
   Terminal,
   Play,
@@ -198,7 +200,7 @@ export default function CodeRunner() {
         <div className="flex flex-col md:flex-row justify-center items-center gap-2 top-0 left-0 w-full z-50 fixed px-2 mb-6 mt-2">
           {/* Tabs */}
           <div className="flex flex-wrap justify-center md:justify-start space-x-2 bg-white/30 dark:bg-slate-700/30 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-white/20 dark:border-slate-600/20">
-            {Object.keys(modules).map((key) => (
+            {Object?.keys(modules)?.map((key) => (
               <button
                 key={key}
                 onClick={() => {
@@ -211,7 +213,7 @@ export default function CodeRunner() {
                   }`}
               >
                 {modules[key]?.icon}
-                <span className="text-sm font-medium">{modules[key].name}</span>
+                <span className="text-sm font-medium">{modules[key]?.name}</span>
               </button>
             ))}
           </div>
@@ -244,7 +246,7 @@ export default function CodeRunner() {
                   <div className="flex items-center gap-3">
                     <div className={`w-3 h-3 rounded-full ${currentConfig?.color}`}></div>
                     <CardTitle className="text-lg">
-                      {currentConfig.name}
+                      {currentConfig?.name}
                     </CardTitle>
                   </div>
 
@@ -313,7 +315,7 @@ export default function CodeRunner() {
 
 
             {/* Code Editor */}
-            <Card className={`shadow-xl border-0 bg-white dark:bg-slate-800 ${currentConfig.accent} border-l-4`}>
+            <Card className={`shadow-xl border-0 bg-white dark:bg-slate-800 ${currentConfig?.accent} border-l-4`}>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -499,7 +501,7 @@ export default function CodeRunner() {
                           Press Ctrl+Enter to generate
                         </span>
                         <span className="text-xs text-slate-500">
-                          {input.length}/500 characters
+                          {input?.length}/500 characters
                         </span>
                       </div>
                     </div>
@@ -508,7 +510,7 @@ export default function CodeRunner() {
                       onClick={handleSubmit}
                       disabled={generate || !input.trim()}
                       size="lg"
-                      className={`${generate || !input.trim()
+                      className={`${generate || !input?.trim()
                         ? 'bg-slate-400 cursor-not-allowed'
                         : 'bg-gradient-to-r mb-5 from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transform hover:scale-105'
                         } text-white font-medium mb-5 shadow-lg transition-all duration-200 rounded-xl px-8 py-3`}
@@ -673,49 +675,75 @@ export default function CodeRunner() {
               </CardContent>
             </Card>
 
-            {
-              review && (
-                <Card className="mt-4 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-900/50 dark:to-gray-900/50 border-slate-200 dark:border-slate-700">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Terminal className="w-6 h-6 text-slate-600 dark:text-slate-400" />
-                      <div>
-                        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Modification Output</h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">Results from your code modification operation</p>
-                      </div>
+            {review && (
+              <Card className="mt-4 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-900/50 dark:to-gray-900/50 border-slate-200 dark:border-slate-700">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Terminal className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+                        Modification Output
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Results from your code modification operation
+                      </p>
                     </div>
-                    <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                      <pre className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap overflow-x-auto">
-                        {review}
-                      </pre>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyToClipboard(review)}
-                        className="h-10 w-10 p-0 cursor-pointer"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <div className="flex justify-between items-center mt-4">
-                      <span className="text-xs text-slate-500">
-                        Generated at {new Date().toLocaleTimeString()}
-                      </span>
+                  </div>
 
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setCodeExplain('')}
-                        className=" cursor-pointer text-slate-500 hover:text-slate-700"
+                  <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 w-full">
+                    <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          code({ node, inline, className, children, ...props }) {
+                            const match = /language-(\w+)/.exec(className || "");
+                            return !inline && match ? (
+                              <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto">
+                                <code className={className} {...props}>
+                                  {children}
+                                </code>
+                              </pre>
+                            ) : (
+                              <code className="bg-gray-200 rounded px-1" {...props}>
+                                {children}
+                              </code>
+                            );
+                          },
+                        }}
                       >
-                        <X className="w-4 h-4 mr-1 cursor-pointer" />
-                        Clear Output
-                      </Button>
+                        {review}
+                      </ReactMarkdown>
                     </div>
-                  </CardContent>
-                </Card>
-              )
-            }
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyToClipboard(review)}
+                      className="h-10 w-10 p-0 cursor-pointer"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-4">
+                    <span className="text-xs text-slate-500">
+                      Generated at {new Date().toLocaleTimeString()}
+                    </span>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setReview("")} // fixed: should clear review, not codeExplain
+                      className="cursor-pointer text-slate-500 hover:text-slate-700"
+                    >
+                      <X className="w-4 h-4 mr-1 cursor-pointer" />
+                      Clear Output
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
           </>
         )}
         {/* explain */}
@@ -767,13 +795,37 @@ export default function CodeRunner() {
                       <Terminal className="w-6 h-6 text-slate-600 dark:text-slate-400" />
                       <div>
                         <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Modification Output</h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">Results from your code modification operation</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                          Results from your code modification operation
+                        </p>
                       </div>
                     </div>
-                    <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                      <pre className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap overflow-x-auto">
-                        {codeExplain}
-                      </pre>
+
+                    <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 w-full">
+                      <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap overflow-x-auto">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            code({ node, inline, className, children, ...props }) {
+                              const match = /language-(\w+)/.exec(className || "");
+                              return !inline && match ? (
+                                <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto">
+                                  <code className={className} {...props}>
+                                    {children}
+                                  </code>
+                                </pre>
+                              ) : (
+                                <code className="bg-gray-200 rounded px-1" {...props}>
+                                  {children}
+                                </code>
+                              );
+                            },
+                          }}
+                        >
+                          {codeExplain}
+                        </ReactMarkdown>
+                      </div>
+
                       <Button
                         variant="ghost"
                         size="sm"
@@ -783,6 +835,7 @@ export default function CodeRunner() {
                         <Copy className="w-4 h-4" />
                       </Button>
                     </div>
+
                     <div className="flex justify-between items-center mt-4">
                       <span className="text-xs text-slate-500">
                         Generated at {new Date().toLocaleTimeString()}
@@ -791,10 +844,10 @@ export default function CodeRunner() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setCodeExplain('')}
-                        className=" cursor-pointer text-slate-500  hover:text-slate-700"
+                        onClick={() => setCodeExplain("")}
+                        className="cursor-pointer text-slate-500 hover:text-slate-700"
                       >
-                        <X className="w-4 h-4 mr-1 " />
+                        <X className="w-4 h-4 mr-1" />
                         Clear Output
                       </Button>
                     </div>
@@ -809,11 +862,11 @@ export default function CodeRunner() {
           <div className="flex items-center justify-center gap-6 text-sm text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-2">
               <Code2 className="w-4 h-4" />
-              Lines: {code.split('\n').length}
+              Lines: {code?.split('\n')?.length}
             </span>
             <span className="flex items-center gap-2">
               <Zap className="w-4 h-4" />
-              Characters: {code.length}
+              Characters: {code?.length}
             </span>
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400">
