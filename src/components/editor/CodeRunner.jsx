@@ -146,17 +146,6 @@ export default function CodeRunner() {
 
   }
 
-  // const handleRefactor = async (promptext = "Clean up and restructure") => {
-  //   try {
-  //     const prompt = promptext + " for the following code:\n" + code;
-  //     const res = await axios.post(`${import.meta.env.VITE_API_URL}/modify`, { prompt });
-  //     setModifyOutput(res.data.response);
-  //     console.log(res.data.response);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
   const handlereview = async () => {
     setReviewLoading(true)
     try {
@@ -687,9 +676,27 @@ export default function CodeRunner() {
                     </div>
                   </div>
                   <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <pre className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap overflow-x-auto">
-                      {modifyOutput}
-                    </pre>
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          code({ node, inline, className, children, ...props }) {
+                            const match = /language-(\w+)/.exec(className || "");
+                            return !inline && match ? (
+                              <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto">
+                                <code className={className} {...props}>
+                                  {children}
+                                </code>
+                              </pre>
+                            ) : (
+                              <code className="bg-gray-200 rounded px-1" {...props}>
+                                {children}
+                              </code>
+                            );
+                          },
+                        }}
+                      >
+                        {modifyOutput}
+                      </ReactMarkdown>
                     <Button
                       variant="ghost"
                       size="sm"
