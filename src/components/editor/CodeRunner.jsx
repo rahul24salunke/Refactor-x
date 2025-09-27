@@ -39,6 +39,7 @@ import { Input } from "../ui/input";
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useTheme } from "next-themes";
+import { toast } from "sonner";
 
 const STARTERS = {
   python: "print(\"Hello from Python!\")\nname = input('Your name: ')\nprint('Hi, ' + name)",
@@ -101,11 +102,18 @@ export default function CodeRunner() {
     setOutput("");
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/run`, { language, code, stdin });
-      // console.log(res.data.result.stdout);
-
-      setOutput(res.data.result.stdout);
+      console.log(res);
+      
+      if ( res?.data?.result?.status_id===6 || res?.data?.result?.status_id===11 ) {
+        toast.error("Error during code execution!");
+        setOutput(res.data.result.stdout || res?.data?.result?.compile_output +'\n'+ res.data.result.stderr);
+      }else{
+        toast.success("Code executed successfully!");
+        setOutput(res.data.result.stdout);
+      }
     } catch (err) {
       console.log(err);
+      toast.error("Error during code execution!");
       setOutput(err.response?.data?.error || err.message);
     }
     setLoading(false);
@@ -116,10 +124,12 @@ export default function CodeRunner() {
     setExplainLoading(true)
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/explain`, { prompt: code });
+      if (res.data.success) {
+        toast.success("Code explaination completed successfully!");
+      }
       setCodeExplain(res.data.response);
-      // console.log(res.data.response);
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong!");
     }
     setExplainLoading(false);
   }
@@ -136,10 +146,12 @@ export default function CodeRunner() {
     try {
       const prompt = userInput + " for the following code:\n" + code;
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/modify`, { prompt });
+      if (res.data.success) {
+        toast.success("Code modification completed successfully!");
+      }
       setModifyOutput(res.data.response);
-      console.log(res.data.response);
     } catch (error) {
-      console.log(error);
+      toast.error("Something went wrong!");
       setModifyLoading(false);
     }
       setModifyLoading(false);
@@ -150,25 +162,30 @@ export default function CodeRunner() {
     setReviewLoading(true)
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/review`, { prompt: code });
+      if (res.data.success) {
+        toast.success("Code review completed successfully!");
+      }
       setReview(res.data.response);
-      console.log(res.data.response);
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong!");
       setReviewLoading(false);
     }
     setReviewLoading(false);
   }
+
   const handleSubmit = async () => {
-    // Placeholder for future functionality
     setGenerate(true)
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/generate`, { prompt: input });
-      console.log(res.data.code);
-
+      if (res.data.success) {
+        toast.success("Code generated successfully!");
+      }
       setLanguage(res.data.language.toLowerCase());
       setCode(res.data.code)
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong!");
       setGenerate(false);
     } finally {
       setGenerate(false);
@@ -177,6 +194,7 @@ export default function CodeRunner() {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard!");
   };
 
   const saveCodeToFile = () => {
@@ -188,6 +206,7 @@ export default function CodeRunner() {
     a.download = `code.${config.ext}`;
     a.click();
     URL.revokeObjectURL(url);
+    toast.success("File download initiated!");
   };
 
 
