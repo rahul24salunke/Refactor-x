@@ -40,11 +40,13 @@ import { Input } from "../ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
+import OutputDiaplay from "@/utils/OutputDiaplay";
 
 const STARTERS = {
   python: "print(\"Hello from Python!\")\nname = input('Your name: ')\nprint('Hi, ' + name)",
   java: "public class Main {\n  public static void main(String[] args) {\n    System.out.println(\"Hello from Java!\");\n  }\n}",
   cpp: "#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n  ios::sync_with_stdio(false); cin.tie(nullptr);\n  cout << \"Hello from C++!\\n\";\n  return 0;\n}",
+  c: "#include <stdio.h>\nint main() {\n    printf(\"Hello from C!\\n\");\n    return 0;\n}",
 };
 
 const LANGUAGE_CONFIGS = {
@@ -65,6 +67,12 @@ const LANGUAGE_CONFIGS = {
     accent: "border-purple-400",
     name: "C++",
     ext: "cpp"
+  },
+  c:{
+    color: "bg-purple-500",
+    accent: "border-purple-400",
+    name: "C",
+    ext: "c"
   }
 };
 
@@ -106,7 +114,7 @@ export default function CodeRunner() {
       
       if ( res?.data?.result?.status_id===6 || res?.data?.result?.status_id===11 ) {
         toast.error("Error during code execution!");
-        setOutput(res.data.result.stdout || res?.data?.result?.compile_output +'\n'+ res.data.result.stderr);
+        setOutput( res?.data?.result?.compile_output || res.data.result.stdout +'\n'+ res.data.result.stderr);
       }else{
         toast.success("Code executed successfully!");
         setOutput(res.data.result.stdout);
@@ -302,6 +310,7 @@ export default function CodeRunner() {
                         <SelectItem value="python">Python</SelectItem>
                         <SelectItem value="java">Java</SelectItem>
                         <SelectItem value="cpp">C++</SelectItem>
+                        <SelectItem value="c">C</SelectItem>
                       </SelectContent>
                     </Select>
 
@@ -695,27 +704,7 @@ export default function CodeRunner() {
                     </div>
                   </div>
                   <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          code({ node, inline, className, children, ...props }) {
-                            const match = /language-(\w+)/.exec(className || "");
-                            return !inline && match ? (
-                              <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto">
-                                <code className={className} {...props}>
-                                  {children}
-                                </code>
-                              </pre>
-                            ) : (
-                              <code className="bg-gray-200 rounded px-1" {...props}>
-                                {children}
-                              </code>
-                            );
-                          },
-                        }}
-                      >
-                        {modifyOutput}
-                      </ReactMarkdown>
+                    <OutputDiaplay props={modifyOutput}/>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -825,27 +814,7 @@ export default function CodeRunner() {
 
                   <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 w-full">
                     <div className="text-sm text-slate-700 dark:text-slate-500 whitespace-pre-wrap overflow-x-auto">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          code({ node, inline, className, children, ...props }) {
-                            const match = /language-(\w+)/.exec(className || "");
-                            return !inline && match ? (
-                              <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto">
-                                <code className={className} {...props}>
-                                  {children}
-                                </code>
-                              </pre>
-                            ) : (
-                              <code className="bg-gray-200 rounded px-1" {...props}>
-                                {children}
-                              </code>
-                            );
-                          },
-                        }}
-                      >
-                        {review}
-                      </ReactMarkdown>
+                      <OutputDiaplay props={review}/>
                     </div>
 
                     <Button
@@ -961,27 +930,7 @@ export default function CodeRunner() {
 
                     <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 w-full">
                       <div className="text-sm text-slate-700 dark:text-slate-500 whitespace-pre-wrap overflow-x-auto">
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          components={{
-                            code({ node, inline, className, children, ...props }) {
-                              const match = /language-(\w+)/.exec(className || "");
-                              return !inline && match ? (
-                                <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto">
-                                  <code className={className} {...props}>
-                                    {children}
-                                  </code>
-                                </pre>
-                              ) : (
-                                <code className="bg-gray-200 rounded px-1" {...props}>
-                                  {children}
-                                </code>
-                              );
-                            },
-                          }}
-                        >
-                          {codeExplain}
-                        </ReactMarkdown>
+                        <OutputDiaplay props={codeExplain}/>
                       </div>
 
                       <Button
