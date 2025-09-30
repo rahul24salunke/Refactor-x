@@ -41,11 +41,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import OutputDiaplay from "@/utils/OutputDiaplay";
+import Footer from "@/utils/Footer";
 
 const STARTERS = {
   python: "print(\"Hello from Python!\")\nname = input('Your name: ')\nprint('Hi, ' + name)",
   java: "public class Main {\n  public static void main(String[] args) {\n    System.out.println(\"Hello from Java!\");\n  }\n}",
-  cpp: "#include <bits/stdc++.h>\nusing namespace std;\nint main(){\n  ios::sync_with_stdio(false); cin.tie(nullptr);\n  cout << \"Hello from C++!\\n\";\n  return 0;\n}",
   c: "#include <stdio.h>\nint main() {\n    printf(\"Hello from C!\\n\");\n    return 0;\n}",
 };
 
@@ -61,12 +61,6 @@ const LANGUAGE_CONFIGS = {
     accent: "border-orange-400",
     name: "Java",
     ext: "java"
-  },
-  cpp: {
-    color: "bg-purple-500",
-    accent: "border-purple-400",
-    name: "C++",
-    ext: "cpp"
   },
   c:{
     color: "bg-purple-500",
@@ -309,7 +303,6 @@ export default function CodeRunner() {
                       <SelectContent>
                         <SelectItem value="python">Python</SelectItem>
                         <SelectItem value="java">Java</SelectItem>
-                        <SelectItem value="cpp">C++</SelectItem>
                         <SelectItem value="c">C</SelectItem>
                       </SelectContent>
                     </Select>
@@ -965,21 +958,8 @@ export default function CodeRunner() {
           )}
 
         {/* Footer */}
-        <div className="mt-12 text-center space-y-2">
-          <div className="flex items-center justify-center gap-6 text-sm text-slate-500 dark:text-slate-400">
-            <span className="flex items-center gap-2">
-              <Code2 className="w-4 h-4" />
-              Lines: {code?.split('\n')?.length}
-            </span>
-            <span className="flex items-center gap-2">
-              <Zap className="w-4 h-4" />
-              Characters: {code?.length}
-            </span>
-          </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Built with React, Monaco Editor, and modern web technologies
-          </p>
-        </div>
+        <Footer code={code}/>
+        {/*  */}
       </div>
     </div>
   );
