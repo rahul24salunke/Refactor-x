@@ -106,11 +106,12 @@ export default function CodeRunner() {
     setLoading(true);
     setOutput("");
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/run`, { language, code, stdin },{
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/run`, { language, code, stdin }, {
         withCredentials: true, // Allow cookies to be sent and received
         headers: {
           'Content-Type': 'application/json',
-        }});
+        }
+      });
       console.log(res);
 
       if (res?.data?.result?.status_id === 6 || res?.data?.result?.status_id === 11) {
@@ -132,7 +133,7 @@ export default function CodeRunner() {
   const handleExplain = async () => {
     setExplainLoading(true)
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/explain`, { prompt: code },{
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/explain`, { prompt: code }, {
         withCredentials: true, // Allow cookies to be sent and received
         headers: {
           'Content-Type': 'application/json',
@@ -160,7 +161,7 @@ export default function CodeRunner() {
     setModifyLoading(true);
     try {
       const prompt = userInput + " for the following code:\n" + code;
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/modify`, { prompt },{
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/modify`, { prompt }, {
         withCredentials: true, // Allow cookies to be sent and received
         headers: {
           'Content-Type': 'application/json',
@@ -181,7 +182,7 @@ export default function CodeRunner() {
   const handlereview = async () => {
     setReviewLoading(true)
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/review`, { prompt: code },{
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/review`, { prompt: code }, {
         withCredentials: true, // Allow cookies to be sent and received
         headers: {
           'Content-Type': 'application/json',
@@ -201,7 +202,7 @@ export default function CodeRunner() {
   const handleSubmit = async () => {
     setGenerate(true)
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/generate`, { prompt: input },{
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/generate`, { prompt: input }, {
         withCredentials: true, // Allow cookies to be sent and received
         headers: {
           'Content-Type': 'application/json',
@@ -227,13 +228,13 @@ export default function CodeRunner() {
     toast.success("Copied to clipboard!");
   };
 
-  const handleLogOut=async()=>{
+  const handleLogOut = async () => {
     try {
-      const res=await axios.post(`${import.meta.env.VITE_AUTH_API_URL}/api/v1/auth/logout`, {}, { withCredentials: true });
+      const res = await axios.post(`${import.meta.env.VITE_AUTH_API_URL}/api/v1/auth/logout`, {}, { withCredentials: true });
       if (res.data.success) {
-      toast.success("Logged out successfully!");
-      // Remove user state, redirect to login if needed
-    }
+        toast.success("Logged out successfully!");
+        // Remove user state, redirect to login if needed
+      }
     } catch (error) {
       toast.error("Error logging out!");
     }
@@ -315,32 +316,32 @@ export default function CodeRunner() {
             </Button>
           </motion.div>
           {/* User Avatar + Menu (hidden on mobile) */}
-<motion.div
-  initial={{ opacity: 0, scale: 0.8 }}
-  animate={{ opacity: 1, scale: 1 }}
-  transition={{ delay: 0.6, duration: 0.9, ease: "easeOut" }}
-  className="hidden md:flex items-center justify-center"
->
-  <Popover>
-    <PopoverTrigger asChild>
-      <div className="cursor-pointer flex items-center gap-2 pl-3 pr-2 py-1 rounded-full shadow-lg bg-white/30 dark:bg-slate-700/30 backdrop-blur-md border border-white/20 dark:border-slate-600/20">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src="https://github.com/shadcn.png" alt="User avatar" />
-        </Avatar>
-      </div>
-    </PopoverTrigger>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6, duration: 0.9, ease: "easeOut" }}
+            className="hidden md:flex items-center justify-center"
+          >
+            <Popover>
+              <PopoverTrigger asChild>
+                <div className="cursor-pointer flex items-center gap-2 pl-3 pr-2 py-1 rounded-full shadow-lg bg-white/30 dark:bg-slate-700/30 backdrop-blur-md border border-white/20 dark:border-slate-600/20">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src="https://github.com/shadcn.png" alt="User avatar" />
+                  </Avatar>
+                </div>
+              </PopoverTrigger>
 
-    <PopoverContent className="w-40 p-2 bg-white dark:bg-slate-800 shadow-md rounded-lg">
-      <button
-        className="flex items-center gap-2 w-full text-sm px-2 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md"
-        onClick={handleLogOut}
-      >
-        <LogOut className="h-4 w-4" />
-        Logout
-      </button>
-    </PopoverContent>
-  </Popover>
-</motion.div>
+              <PopoverContent className="w-40 p-2 bg-white dark:bg-slate-800 shadow-md rounded-lg">
+                <button
+                  className="flex items-center gap-2 w-full text-sm px-2 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md"
+                  onClick={handleLogOut}
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </PopoverContent>
+            </Popover>
+          </motion.div>
 
         </motion.div>
 
