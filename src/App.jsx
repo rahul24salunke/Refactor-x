@@ -9,12 +9,11 @@ const router=createBrowserRouter([
     path:"/",
     element:<CodeRunner/>
   },{
+    path:"/Auth",
+    element:<Auth/>
+  },{
     path:"*",
     element:<Page404/>
-  },
-  {
-    path:"/auth",
-    element:<Auth/>
   }
 ])
 function App() {
