@@ -33,7 +33,8 @@ import {
   Check,
   CheckCircle,
   Clock,
-  Code
+  Code,
+  LogOut
 } from "lucide-react";
 import { Input } from "../ui/input";
 
@@ -42,6 +43,8 @@ import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import OutputDiaplay from "@/utils/OutputDiaplay";
 import Footer from "@/utils/Footer";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const STARTERS = {
   python: "print(\"Hello from Python!\")\nname = input('Your name: ')\nprint('Hi, ' + name)",
@@ -62,7 +65,7 @@ const LANGUAGE_CONFIGS = {
     name: "Java",
     ext: "java"
   },
-  c:{
+  c: {
     color: "bg-purple-500",
     accent: "border-purple-400",
     name: "C",
@@ -105,11 +108,11 @@ export default function CodeRunner() {
     try {
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/run`, { language, code, stdin });
       console.log(res);
-      
-      if ( res?.data?.result?.status_id===6 || res?.data?.result?.status_id===11 ) {
+
+      if (res?.data?.result?.status_id === 6 || res?.data?.result?.status_id === 11) {
         toast.error("Error during code execution!");
-        setOutput( res?.data?.result?.compile_output || res.data.result.stdout +'\n'+ res.data.result.stderr);
-      }else{
+        setOutput(res?.data?.result?.compile_output || res.data.result.stdout + '\n' + res.data.result.stderr);
+      } else {
         toast.success("Code executed successfully!");
         setOutput(res.data.result.stdout);
       }
@@ -131,7 +134,8 @@ export default function CodeRunner() {
       }
       setCodeExplain(res.data.response);
     } catch (error) {
-      toast.error("Something went wrong!");
+      toast.error(error?.response?.data?.message || "Something went wrong!");
+
     }
     setExplainLoading(false);
   }
@@ -153,10 +157,10 @@ export default function CodeRunner() {
       }
       setModifyOutput(res.data.response);
     } catch (error) {
-      toast.error("Something went wrong!");
+      toast.error(error?.response?.data?.message || "Something went wrong!");
       setModifyLoading(false);
     }
-      setModifyLoading(false);
+    setModifyLoading(false);
 
   }
 
@@ -169,8 +173,7 @@ export default function CodeRunner() {
       }
       setReview(res.data.response);
     } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong!");
+      toast.error(error?.response?.data?.message || "Something went wrong!");
       setReviewLoading(false);
     }
     setReviewLoading(false);
@@ -187,7 +190,8 @@ export default function CodeRunner() {
       setCode(res.data.code)
     } catch (error) {
       console.log(error);
-      toast.error("Something went wrong!");
+      toast.error(error?.response?.data?.message || "Something went wrong!");
+
       setGenerate(false);
     } finally {
       setGenerate(false);
@@ -199,6 +203,17 @@ export default function CodeRunner() {
     toast.success("Copied to clipboard!");
   };
 
+  const handleLogOut=async()=>{
+    try {
+      const res=await axios.post(`http://localhost:3000/api/v1/auth/logout`, {}, { withCredentials: true });
+      if (res.data.success) {
+      toast.success("Logged out successfully!");
+      // Remove user state, redirect to login if needed
+    }
+    } catch (error) {
+      toast.error("Error logging out!");
+    }
+  }
   const saveCodeToFile = () => {
     const config = LANGUAGE_CONFIGS[language];
     const blob = new Blob([code], { type: 'text/plain' });
@@ -275,6 +290,34 @@ export default function CodeRunner() {
               )}
             </Button>
           </motion.div>
+          {/* User Avatar + Menu (hidden on mobile) */}
+<motion.div
+  initial={{ opacity: 0, scale: 0.8 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ delay: 0.6, duration: 0.9, ease: "easeOut" }}
+  className="hidden md:flex items-center justify-center"
+>
+  <Popover>
+    <PopoverTrigger asChild>
+      <div className="cursor-pointer flex items-center gap-2 pl-3 pr-2 py-1 rounded-full shadow-lg bg-white/30 dark:bg-slate-700/30 backdrop-blur-md border border-white/20 dark:border-slate-600/20">
+        <Avatar className="h-10 w-10">
+          <AvatarImage src="https://github.com/shadcn.png" alt="User avatar" />
+        </Avatar>
+      </div>
+    </PopoverTrigger>
+
+    <PopoverContent className="w-40 p-2 bg-white dark:bg-slate-800 shadow-md rounded-lg">
+      <button
+        className="flex items-center gap-2 w-full text-sm px-2 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md"
+        onClick={handleLogOut}
+      >
+        <LogOut className="h-4 w-4" />
+        Logout
+      </button>
+    </PopoverContent>
+  </Popover>
+</motion.div>
+
         </motion.div>
 
 
@@ -697,7 +740,7 @@ export default function CodeRunner() {
                     </div>
                   </div>
                   <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-                    <OutputDiaplay props={modifyOutput}/>
+                    <OutputDiaplay props={modifyOutput} />
                     <Button
                       variant="ghost"
                       size="sm"
@@ -807,7 +850,7 @@ export default function CodeRunner() {
 
                   <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 w-full">
                     <div className="text-sm text-slate-700 dark:text-slate-500 whitespace-pre-wrap overflow-x-auto">
-                      <OutputDiaplay props={review}/>
+                      <OutputDiaplay props={review} />
                     </div>
 
                     <Button
@@ -923,7 +966,7 @@ export default function CodeRunner() {
 
                     <div className="bg-white flex justify-between dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 w-full">
                       <div className="text-sm text-slate-700 dark:text-slate-500 whitespace-pre-wrap overflow-x-auto">
-                        <OutputDiaplay props={codeExplain}/>
+                        <OutputDiaplay props={codeExplain} />
                       </div>
 
                       <Button
@@ -958,7 +1001,7 @@ export default function CodeRunner() {
           )}
 
         {/* Footer */}
-        <Footer code={code}/>
+        <Footer code={code} />
         {/*  */}
       </div>
     </div>
