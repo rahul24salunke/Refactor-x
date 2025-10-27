@@ -39,9 +39,11 @@ const Auth = () => {
   // Handle login submission
   const handleLogin = async (e) => {
     e.preventDefault();
+    console.log(import.meta.env.VITE_AUTH_API_URL);
+    
     setIsLoading(true);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_AUTH_API_URL}/login`, loginData, {
+      const response = await axios.post(`${import.meta.env.VITE_AUTH_API_URL}/api/v1/auth/login`, loginData, {
         withCredentials: true, // Allow cookies to be sent and received
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +67,7 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_AUTH_API_URL}/Signup`, signupData, {
+      const response = await axios.post(`${import.meta.env.VITE_AUTH_API_URL}/api/v1/auth/Signup`, signupData, {
         withCredentials: true, // Allow cookies to be sent and received
         headers: {
           'Content-Type': 'application/json',
