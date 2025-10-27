@@ -106,7 +106,11 @@ export default function CodeRunner() {
     setLoading(true);
     setOutput("");
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/run`, { language, code, stdin });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/run`, { language, code, stdin },{
+        withCredentials: true, // Allow cookies to be sent and received
+        headers: {
+          'Content-Type': 'application/json',
+        }});
       console.log(res);
 
       if (res?.data?.result?.status_id === 6 || res?.data?.result?.status_id === 11) {
@@ -128,7 +132,12 @@ export default function CodeRunner() {
   const handleExplain = async () => {
     setExplainLoading(true)
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/explain`, { prompt: code });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/explain`, { prompt: code },{
+        withCredentials: true, // Allow cookies to be sent and received
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       if (res.data.success) {
         toast.success("Code explaination completed successfully!");
       }
@@ -151,7 +160,12 @@ export default function CodeRunner() {
     setModifyLoading(true);
     try {
       const prompt = userInput + " for the following code:\n" + code;
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/modify`, { prompt });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/modify`, { prompt },{
+        withCredentials: true, // Allow cookies to be sent and received
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       if (res.data.success) {
         toast.success("Code modification completed successfully!");
       }
@@ -167,7 +181,12 @@ export default function CodeRunner() {
   const handlereview = async () => {
     setReviewLoading(true)
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/review`, { prompt: code });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/review`, { prompt: code },{
+        withCredentials: true, // Allow cookies to be sent and received
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       if (res.data.success) {
         toast.success("Code review completed successfully!");
       }
@@ -182,7 +201,12 @@ export default function CodeRunner() {
   const handleSubmit = async () => {
     setGenerate(true)
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/generate`, { prompt: input });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/generate`, { prompt: input },{
+        withCredentials: true, // Allow cookies to be sent and received
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       if (res.data.success) {
         toast.success("Code generated successfully!");
       }
@@ -205,7 +229,7 @@ export default function CodeRunner() {
 
   const handleLogOut=async()=>{
     try {
-      const res=await axios.post(`http://localhost:3000/api/v1/auth/logout`, {}, { withCredentials: true });
+      const res=await axios.post(`${import.meta.env.VITE_AUTH_API_URL}/api/v1/auth/logout`, {}, { withCredentials: true });
       if (res.data.success) {
       toast.success("Logged out successfully!");
       // Remove user state, redirect to login if needed
