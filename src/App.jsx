@@ -3,26 +3,29 @@ import CodeRunner from "./components/editor/CodeRunner"
 import { ThemeProvider } from "next-themes"
 import Page404 from "./utils/Page404"
 import Auth from "./components/auth/Auth"
+import { AuthProvider } from "./components/Context/AuthContext"
 
-const router=createBrowserRouter([
+const router = createBrowserRouter([
   {
-    path:"/",
-    element:<CodeRunner/>
-  },{
-    path:"/Auth",
-    element:<Auth/>
-  },{
-    path:"*",
-    element:<Page404/>
+    path: "/",
+    element: <CodeRunner />
+  }, {
+    path: "/Auth",
+    element: <Auth />
+  }, {
+    path: "*",
+    element: <Page404 />
   }
 ])
 function App() {
 
   return (
     <>
-      <ThemeProvider attribute="class" defaultTheme="light">
-        <RouterProvider router={router}/>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </AuthProvider>
     </>
   )
 }

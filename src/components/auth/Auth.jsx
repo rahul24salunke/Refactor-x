@@ -8,11 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Lock, Mail, User, AlertCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import axios from "axios";
+import { toast } from "sonner";
 
 // Configure axios defaults
 axios.defaults.withCredentials = true; // This is crucial for cookies
-
-const API_URL = "http://localhost:5000/api/auth";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -51,11 +50,13 @@ const Auth = () => {
       });
 
       if (response.data.success) {
+        toast.success("Login successful!");
         console.log("Login successful, token cookie set");
         navigate("/");
       }
     } catch (err) {
       console.error("Login error:", err);
+      toast.error("Login failed. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }
@@ -75,14 +76,14 @@ const Auth = () => {
       });
 
       if (response.data.success) {
-        
+        toast.success("Signup successful!");
         // Cookie is automatically stored by the browser
         console.log("Signup successful, token cookie set");
           navigate("/");
       }
     } catch (err) {
       console.error("Signup error:", err);
-      
+      toast.error("Signup failed. Please try again.");
     } finally {
       setIsLoading(false);
     }

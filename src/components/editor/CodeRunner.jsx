@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,6 +45,8 @@ import OutputDiaplay from "@/utils/OutputDiaplay";
 import Footer from "@/utils/Footer";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { AuthContext } from "../Context/AuthContext";
+import { Link } from "react-router-dom";
 
 const STARTERS = {
   python: "print(\"Hello from Python!\")\nname = input('Your name: ')\nprint('Hi, ' + name)",
@@ -82,6 +84,7 @@ const modules = {
 };
 
 export default function CodeRunner() {
+  const { user, reloading, logout } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("generate");
   const [input, setInput] = useState("");
   const [language, setLanguage] = useState("python");
@@ -228,17 +231,18 @@ export default function CodeRunner() {
     toast.success("Copied to clipboard!");
   };
 
-  const handleLogOut = async () => {
-    try {
-      const res = await axios.post(`${import.meta.env.VITE_AUTH_API_URL}/api/v1/auth/logout`, {}, { withCredentials: true });
-      if (res.data.success) {
-        toast.success("Logged out successfully!");
-        // Remove user state, redirect to login if needed
-      }
-    } catch (error) {
-      toast.error("Error logging out!");
-    }
-  }
+  // const handleLogOut = async () => {
+  //   try {
+  //     const res = await axios.post(`${import.meta.env.VITE_AUTH_API_URL}/api/v1/auth/logout`, {}, { withCredentials: true });
+  //     if (res.data.success) {
+  //       toast.success("Logged out successfully!");
+  //       // Remove user state, redirect to login if needed
+  //     }
+  //   } catch (error) {
+  //     toast.error("Error logging out!");
+  //   }
+  // }
+
   const saveCodeToFile = () => {
     const config = LANGUAGE_CONFIGS[language];
     const blob = new Blob([code], { type: 'text/plain' });
@@ -322,25 +326,50 @@ export default function CodeRunner() {
             transition={{ delay: 0.6, duration: 0.9, ease: "easeOut" }}
             className="hidden md:flex items-center justify-center"
           >
-            <Popover>
-              <PopoverTrigger asChild>
-                <div className="cursor-pointer flex items-center gap-2 pl-3 pr-2 py-1 rounded-full shadow-lg bg-white/30 dark:bg-slate-700/30 backdrop-blur-md border border-white/20 dark:border-slate-600/20">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src="https://github.com/shadcn.png" alt="User avatar" />
-                  </Avatar>
-                </div>
-              </PopoverTrigger>
+            {user ? (
+              <>
+                <div className="hidden md:flex">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <div className="cursor-pointer flex items-center gap-2 pl-3 pr-2 py-1 rounded-full shadow-lg bg-white/30 dark:bg-slate-700/30 backdrop-blur-md border border-white/20 dark:border-slate-600/20">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src="https://github.com/shadcn.png" alt="User avatar" />
+                        </Avatar>
+                        <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                          {user?.username}
+                        </span>
+                      </div>
+                    </PopoverTrigger>
 
-              <PopoverContent className="w-40 p-2 bg-white dark:bg-slate-800 shadow-md rounded-lg">
-                <button
-                  className="flex items-center gap-2 w-full text-sm px-2 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md"
-                  onClick={handleLogOut}
+                    <PopoverContent className="w-40 p-2 bg-white dark:bg-slate-800 shadow-md rounded-lg">
+                      <button
+                        className="flex items-center gap-2 w-full text-sm px-2 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md"
+                        onClick={logout}
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Logout
+                      </button>
+                    </PopoverContent>
+                  </Popover>
+
+                </div>
+              </>
+            ) : (
+              <div className="flex gap-2">
+                <Link
+                  to="/auth"
+                  className="px-5 py-2 bg-blue-500 text-white rounded-full"
                 >
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </button>
-              </PopoverContent>
-            </Popover>
+                  Login
+                </Link>
+                <Link
+                  to="/auth?mode=signup"
+                  className="px-5 py-2 bg-green-500 text-white rounded-full"
+                >
+                  Signup
+                </Link>
+              </div>
+            )}
           </motion.div>
 
         </motion.div>
